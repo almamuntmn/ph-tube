@@ -27,8 +27,8 @@ const displayDetails = (video) => {
             <div class="flex items-center gap-2">
                 <p class="text-sm text-gray-500">${video.authors[0].verified ? 'Verified' : 'Not Verified'}</p>
                 ${video.authors[0].verified
-                    ? `<img class="w-4 h-4" src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" alt="verified" />`
-                    : ''}
+            ? `<img class="w-4 h-4" src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" alt="verified" />`
+            : ''}
             </div>
         </div>
     </div>
@@ -49,10 +49,13 @@ function getTimeAgo(time) {
     return `${hours} hours, ${minutes} minutes, ${seconds} seconds ago`;
 }
 
-const loadVideos = () => {
-    fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
+const loadVideos = (searchInput = "") => {
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${searchInput}`)
         .then((response) => response.json())
-        .then((data) => displayVideos(data.videos))
+        .then((data) => {
+            const filteredVideos = data.videos.filter(video => video.title.toLowerCase().includes(searchInput));
+            displayVideos(filteredVideos);
+        })
         .catch((error) => console.log('Error fetching videos:', error));
 }
 
@@ -105,7 +108,7 @@ const displayVideos = (videos) => {
         </div>`;
         return;
     }
-        else {
+    else {
         videosContainer.classList.add('grid');
     }
 
@@ -116,11 +119,10 @@ const displayVideos = (videos) => {
         videoCard.innerHTML = `
             <figure class="h-[200px] relative">
                 <img src="${video.thumbnail}" class="w-full h-full object-cover" alt="${video.title}" />
-                ${
-                    video.others.posted_date?.length === 0
-                        ? ''
-                        : `<span class="absolute text-[10px] right-2 bottom-2 bg-black text-white px-2 py-1 rounded">${getTimeAgo(video.others.posted_date)}</span>`
-                }
+                ${video.others.posted_date?.length === 0
+                ? ''
+                : `<span class="absolute text-[10px] right-2 bottom-2 bg-black text-white px-2 py-1 rounded">${getTimeAgo(video.others.posted_date)}</span>`
+            }
             </figure>
             <div class="card-body">
                 <div class="flex gap-4">
@@ -129,11 +131,10 @@ const displayVideos = (videos) => {
                         <h2 class="font-bold text-base">${video.title}</h2>
                         <div class="flex items-center gap-2">
                             <p class="text-sm text-gray-500">${video.authors[0].profile_name}</p>
-                            ${
-                                video.authors[0].verified
-                                    ? `<img class="w-4 h-4" src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" alt="verified" />`
-                                    : ''
-                            }
+                            ${video.authors[0].verified
+                ? `<img class="w-4 h-4" src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" alt="verified" />`
+                : ''
+            }
                         </div>
                         <p> <button onclick="loadDetails('${video.video_id}')" class="btn btn-xs btn-error text-white">Details</button> </p>
                     </div>
@@ -149,7 +150,7 @@ const displayVideos = (videos) => {
 const displayCategories = (data) => {
     const categoriesContainer = document.getElementById('categories');
     data.forEach((item) => {
-const buttonContainer = document.createElement('div');
+        const buttonContainer = document.createElement('div');
         buttonContainer.innerHTML = `
             <button id="btn${item.category_id}" onclick="loadCategoryVideos('${item.category_id}')" class="btn category-btn">
                 ${item.category}
@@ -159,6 +160,11 @@ const buttonContainer = document.createElement('div');
 
     });
 };
+
+document.getElementById('searchInput').addEventListener("keyup", (event) => {
+    loadVideos(event.target.value);
+
+});
 
 loadCategories();
 loadVideos();
