@@ -8,6 +8,40 @@ const loadCategories = () => {
         .catch((error) => console.error('Error fetching categories:', error));
 }
 
+const loadDetails = async (videoId) => {
+    const url = `https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    displayDetails(data.video);
+};
+const displayDetails = (video) => {
+    console.log(video);
+    const detailsContainer = document.getElementById('modal-content');
+    detailsContainer.innerHTML = `
+    <img src="${video.thumbnail}" class="w-full h-64 object-cover" alt="${video.title}" />
+    <h2 class="text-2xl font-bold mt-4">${video.title}</h2>
+    <div class="flex items-center gap-4 mt-2">
+        <img class="w-12 h-12 rounded-full object-cover" src="${video.authors[0].profile_picture}" alt="author" />
+        <div>
+            <p class="text-lg font-semibold">${video.authors[0].profile_name}</p>
+            <div class="flex items-center gap-2">
+                <p class="text-sm text-gray-500">${video.authors[0].verified ? 'Verified' : 'Not Verified'}</p>
+                ${video.authors[0].verified
+                    ? `<img class="w-4 h-4" src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" alt="verified" />`
+                    : ''}
+            </div>
+        </div>
+    </div>
+    <p class="mt-4">${video.description}</p>
+    <div class="mt-4">
+        <p class="text-sm text-gray-500">Views: ${video.others.views}</p>
+        <p class="text-sm text-gray-500">Posted: ${video.others.posted_date ? getTimeAgo(video.others.posted_date) : 'N/A'}</p>
+    </div>
+    `;
+    document.getElementById('showModalData').click();
+
+}
+
 function getTimeAgo(time) {
     const hours = parseInt((time % 86400) / 3600);
     const minutes = parseInt((time % 3600) / 60);
@@ -66,7 +100,7 @@ const displayVideos = (videos) => {
         videosContainer.classList.remove('grid');
         videosContainer.innerHTML = `
         <div class="min-h-screen flex flex-col items-center justify-center">
-            <img src="./assets/Icon.png" alt="Oops!! Sorry, There is no Content here" class="w-48 h-48 mb-4">
+            <img src="assets/Icon.png" alt="Oops!! Sorry, There is no Content here" class="w-48 h-48 mb-4">
         <p class="text-3xl text-center text-gray-500">Oops!! Sorry, There is no Content here</p>
         </div>`;
         return;
@@ -101,6 +135,7 @@ const displayVideos = (videos) => {
                                     : ''
                             }
                         </div>
+                        <p> <button onclick="loadDetails('${video.video_id}')" class="btn btn-xs btn-error text-white">Details</button> </p>
                     </div>
                 </div>
             </div>
