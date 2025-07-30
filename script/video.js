@@ -22,6 +22,23 @@ const loadVideos = () => {
         .catch((error) => console.log('Error fetching videos:', error));
 }
 
+const loadCategoryVideos = (categoryId) => {
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${categoryId}`)
+        .then((response) => response.json())
+        .then((data) => {
+            // Clear previous active button
+            const previousActiveButton = document.querySelector('.category-btn.active');
+            if (previousActiveButton) {
+                previousActiveButton.classList.remove('active');
+            }
+            // Set the clicked button as active
+            const activeButton = document.getElementById(`btn${categoryId}`);
+            activeButton.classList.add('active');
+            displayVideos(data.category);
+        })
+        .catch((error) => console.log('Error fetching category videos:', error));
+}
+
 // const cardDemo = {
 //     "category_id": "1001",
 //     "video_id": "aaab",
@@ -44,6 +61,19 @@ const loadVideos = () => {
 const displayVideos = (videos) => {
     const videosContainer = document.getElementById('videos');
     videosContainer.innerHTML = ''; // Clear previous cards
+
+    if (videos.length === 0) {
+        videosContainer.classList.remove('grid');
+        videosContainer.innerHTML = `
+        <div class="min-h-screen flex flex-col items-center justify-center">
+            <img src="assets/icon.png" alt="Oops!! Sorry, There is no Content here" class="w-48 h-48 mb-4">
+        <p class="text-3xl text-center text-gray-500">Oops!! Sorry, There is no Content here</p>
+        </div>`;
+        return;
+    }
+        else {
+        videosContainer.classList.add('grid');
+    }
 
     videos.forEach((video) => {
         const videoCard = document.createElement('div');
@@ -83,12 +113,14 @@ const displayVideos = (videos) => {
 // create Display Categories function
 const displayCategories = (data) => {
     const categoriesContainer = document.getElementById('categories');
-    data.forEach((category) => {
-        console.log(category);
-        const button = document.createElement('button');
-        button.classList = 'btn';
-        button.innerText = category.category;
-        categoriesContainer.append(button);
+    data.forEach((item) => {
+const buttonContainer = document.createElement('div');
+        buttonContainer.innerHTML = `
+            <button id="btn${item.category_id}" onclick="loadCategoryVideos('${item.category_id}')" class="btn category-btn">
+                ${item.category}
+            </button>
+        `;
+        categoriesContainer.append(buttonContainer);
 
     });
 };
