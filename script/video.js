@@ -43,28 +43,40 @@ const loadVideos = () => {
 
 const displayVideos = (videos) => {
     const videosContainer = document.getElementById('videos');
+    videosContainer.innerHTML = ''; // Clear previous cards
+
     videos.forEach((video) => {
-        console.log(video);
         const videoCard = document.createElement('div');
-        videoCard.classList = 'card';
+        videoCard.className = 'card w-full bg-base-100 shadow-sm'; // Important fix
+
         videoCard.innerHTML = `
-          <figure class="h-[200px] relative">
-    <img
-      src="${video.thumbnail}"
-      class="w-full h-full object-cover"
-      alt="${video.title}" />
-      ${video.others.posted_date?.length == 0 ? "" : `<span class="absolute text-[10px] right-8 bottom-2 bg-black text-white text-right">${getTimeAgo(video.others.posted_date)}</span>`
-            }
-  </figure>
-  <div class="px-0 py-8 flex gap-4">
-<div> <img class="w-12 h-12 rounded-full object-cover" src="${video.authors[0].profile_picture}" /></div>
-<div>
-  <h2 class="font-bold">${video.title}</h2>
-  <div class="flex items-center gap-2">
-  <p class="text-sm text-gray-500">${video.authors[0].profile_name}</p>
-    ${video.authors[0].verified === true ? `<img class="w-4 h-4" src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" />` : ''}
-`
-        videosContainer.append(videoCard);
+            <figure class="h-[200px] relative">
+                <img src="${video.thumbnail}" class="w-full h-full object-cover" alt="${video.title}" />
+                ${
+                    video.others.posted_date?.length === 0
+                        ? ''
+                        : `<span class="absolute text-[10px] right-2 bottom-2 bg-black text-white px-2 py-1 rounded">${getTimeAgo(video.others.posted_date)}</span>`
+                }
+            </figure>
+            <div class="card-body">
+                <div class="flex gap-4">
+                    <img class="w-12 h-12 rounded-full object-cover" src="${video.authors[0].profile_picture}" alt="author" />
+                    <div>
+                        <h2 class="font-bold text-base">${video.title}</h2>
+                        <div class="flex items-center gap-2">
+                            <p class="text-sm text-gray-500">${video.authors[0].profile_name}</p>
+                            ${
+                                video.authors[0].verified
+                                    ? `<img class="w-4 h-4" src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" alt="verified" />`
+                                    : ''
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        videosContainer.appendChild(videoCard);
     });
 };
 
