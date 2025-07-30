@@ -66,7 +66,7 @@ const displayVideos = (videos) => {
         videosContainer.classList.remove('grid');
         videosContainer.innerHTML = `
         <div class="min-h-screen flex flex-col items-center justify-center">
-            <img src="assets/Icon.png" alt="Oops!! Sorry, There is no Content here" class="w-48 h-48 mb-4">
+            <img src="./assets/Icon.png" alt="Oops!! Sorry, There is no Content here" class="w-48 h-48 mb-4">
         <p class="text-3xl text-center text-gray-500">Oops!! Sorry, There is no Content here</p>
         </div>`;
         return;
